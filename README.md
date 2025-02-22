@@ -1,6 +1,6 @@
-# CI/CD Pipeline - Pipepline
+# CI Pipeline - dummy Node.js application
 
-This repository contains a GitHub Actions workflow for a comprehensive CI/CD pipeline designed to build, scan, and deploy Docker images to Amazon ECR. The pipeline is configured to run on pull requests targeting the `main` branch, as well as via manual triggers using workflow dispatch.
+This repository contains a GitHub Actions workflow for a comprehensive CI pipeline designed to build, scan, and deploy Docker images to Amazon ECR. The pipeline is configured to run on pull requests targeting the `main` branch, as well as via manual triggers using workflow dispatch.
 
 ## Overview
 
@@ -83,4 +83,4 @@ Ensure the following secrets are set in your GitHub repository:
 
 ## Conclusion
 
-This CI/CD pipeline provides an automated workflow to build, scan, and deploy Docker images to Amazon ECR while integrating security scanning and real-time notifications. It is designed to ensure that only secure and validated images are deployed, improving the overall security posture of your deployment process.
+This CI pipeline provides an automated workflow to build, scan, and deploy Docker images to Amazon ECR while integrating security scanning and real-time notifications. It is designed to ensure that only secure and validated images are deployed, improving the overall security posture of your deployment process.
