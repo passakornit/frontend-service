@@ -35,14 +35,15 @@ jobs:
 
     - name: Build Docker Image
       run: |
-        docker build -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ github.event.repository.name }}-$IMAGE_VERSION .
+        docker build -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:$IMAGE_VERSION .
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@0.28.0
       with:
-        image-ref: ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ github.event.repository.name }}-${{ env.IMAGE_VERSION }}
+        image-ref: ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ env.IMAGE_VERSION }}
         format: 'sarif'
         output: 'trivy-results.sarif'
+        severity: 'CRITICAL'
         exit-code: '1'
 
     - name: Upload Trivy scan results to GitHub Security tab
@@ -55,16 +56,16 @@ jobs:
     - name: Push Docker Image to ECR
       if: success()
       run: |
-        docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ github.event.repository.name }}-$IMAGE_VERSION
+        docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:$IMAGE_VERSION
 
     - name: Send Success Notification to Google Chat
       if: success()
       run: |
-        MESSAGE="{\"text\": \"🚀 CI/CD Pipeline SUCCESS:\n\n📌 Repository: *${{ github.repository }}*\n🔄 Branch: *${{ github.ref_name }}*\n🏷️ Tag: *${{ env.IMAGE_VERSION }}*\n📦 Docker Image: *${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ github.event.repository.name }}-${{ env.IMAGE_VERSION }}*\n\n🛡️ Trivy Scan: ✅ Passed\n\n📊 Status: ✅ SUCCESS\n🔗 [View Workflow Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\"}"
+        MESSAGE="{\"text\": \"🚀 CI/CD Pipeline SUCCESS:\n\n📌 Repository: *${{ github.repository }}*\n🔄 Branch: *${{ github.ref_name }}*\n🏷️ Tag: *${{ env.IMAGE_VERSION }}*\n📦 Docker Image: *${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ env.IMAGE_VERSION }}*\n\n🛡️ Trivy Scan: ✅ Passed\n\n📊 Status: ✅ SUCCESS\n🔗 [View Workflow Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\"}"
         curl -X POST -H "Content-Type: application/json" -d "$MESSAGE" "${{ secrets.GOOGLE_CHAT_WEBHOOK }}"
 
     - name: Send Failure Notification to Google Chat
       if: failure()
       run: |
-        MESSAGE="{\"text\": \"🚀 CI/CD Pipeline FAILED:\n\n📌 Repository: *${{ github.repository }}*\n🔄 Branch: *${{ github.ref_name }}*\n🏷️ Tag: *${{ env.IMAGE_VERSION }}*\n📦 Docker Image: *${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ github.event.repository.name }}-${{ env.IMAGE_VERSION }}*\n\n📊 Status: ❌ FAILED\n🔗 [View Workflow Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\"}"
+        MESSAGE="{\"text\": \"🚀 CI/CD Pipeline FAILED:\n\n📌 Repository: *${{ github.repository }}*\n🔄 Branch: *${{ github.ref_name }}*\n🏷️ Tag: *${{ env.IMAGE_VERSION }}*\n📦 Docker Image: *${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ env.IMAGE_VERSION }}*\n\n📊 Status: ❌ FAILED\n🔗 [View Workflow Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\"}"
         curl -X POST -H "Content-Type: application/json" -d "$MESSAGE" "${{ secrets.GOOGLE_CHAT_WEBHOOK }}"
